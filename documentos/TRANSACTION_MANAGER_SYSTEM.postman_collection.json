@@ -1,0 +1,251 @@
+{
+	"info": {
+		"_postman_id": "transaction-manager-system",
+		"name": "TRANSACTION_MANAGER_SYSTEM",
+		"description": "Colección de Postman para el Sistema de Gestión de Transacciones\n\nIncluye todos los endpoints disponibles:\n- CRUD de transacciones\n- Filtros de búsqueda\n- Sistema de pagos\n- Validaciones",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Transacciones",
+			"item": [
+				{
+					"name": "Obtener todas las transacciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/transacciones",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"transacciones"
+							]
+						},
+						"description": "Obtiene todas las transacciones sin filtros"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener transacciones con filtros",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/transacciones?nombre=test&fecha=2024-01-01&estado=PENDIENTE",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"transacciones"
+							],
+							"query": [
+								{
+									"key": "nombre",
+									"value": "test",
+									"description": "Filtrar por nombre (opcional)"
+								},
+								{
+									"key": "fecha",
+									"value": "2024-01-01",
+									"description": "Filtrar por fecha (opcional, formato: YYYY-MM-DD)"
+								},
+								{
+									"key": "estado",
+									"value": "PENDIENTE",
+									"description": "Filtrar por estado: PENDIENTE o PAGADO (opcional)"
+								}
+							]
+						},
+						"description": "Obtiene transacciones aplicando filtros opcionales"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener transacción por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/transacciones/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"transacciones",
+								"1"
+							]
+						},
+						"description": "Obtiene una transacción específica por su ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear nueva transacción",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Transacción de prueba\",\n  \"valor\": 100.50,\n  \"fecha\": \"2024-01-15\",\n  \"estado\": \"PENDIENTE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/transacciones",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"transacciones"
+							]
+						},
+						"description": "Crea una nueva transacción"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar transacción",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Transacción actualizada\",\n  \"valor\": 150.75,\n  \"fecha\": \"2024-01-20\",\n  \"estado\": \"PAGADO\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/transacciones/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"transacciones",
+								"1"
+							]
+						},
+						"description": "Actualiza una transacción existente por su ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar transacción",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/transacciones/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"transacciones",
+								"1"
+							]
+						},
+						"description": "Elimina una transacción por su ID"
+					},
+					"response": []
+				}
+			],
+			"description": "Operaciones CRUD para transacciones"
+		},
+		{
+			"name": "Pagos",
+			"item": [
+				{
+					"name": "Realizar pago",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"monto\": 100.50\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/transacciones/pagar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"transacciones",
+								"pagar"
+							]
+						},
+						"description": "Realiza un pago por el monto especificado. Solo acepta montos exactos que coincidan con transacciones pendientes."
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener transacciones pendientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/transacciones/pendientes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"transacciones",
+								"pendientes"
+							]
+						},
+						"description": "Obtiene todas las transacciones pendientes ordenadas por fecha"
+					},
+					"response": []
+				}
+			],
+			"description": "Operaciones relacionadas con el sistema de pagos"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string",
+			"description": "URL base del backend"
+		}
+	]
+} 

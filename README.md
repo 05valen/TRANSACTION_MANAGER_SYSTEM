@@ -52,29 +52,34 @@ java -version && node --version && npm --version && mvn --version
 
 ---
 
-## 🚀 Instalación y Configuración
+## 🚀 Instalación y Configuración PASO A PASO
 
-### 1. Clonar el Repositorio
+### Paso 1: Clonar el Repositorio
 
 ```bash
-git clone <repository-url>
-cd transaction-management-system
+git clone https://github.com/05valen/TRANSACTION_MANAGER_SYSTEM.git
+cd TRANSACTION_MANAGER_SYSTEM
 ```
 
-### 2. Configurar el Backend
+### Paso 2: Verificar Estructura del Proyecto
 
 ```bash
-# Navegar al directorio del proyecto
-cd transaction-management-system
+# Debes ver esta estructura:
+ls -la
+# Debe mostrar: backend/, frontend/, pom.xml, README.md, etc.
+```
 
-# Verificar que Maven puede resolver las dependencias
-mvn dependency:resolve
+### Paso 3: Configurar el Backend
 
-# Compilar el proyecto (sin ejecutar tests)
+```bash
+# Desde la raíz del proyecto (donde está el pom.xml)
 mvn clean compile -DskipTests
+
+# Si hay errores de compilación, ejecutar:
+mvn clean install -DskipTests
 ```
 
-### 3. Configurar el Frontend
+### Paso 4: Configurar el Frontend
 
 ```bash
 # Navegar al directorio frontend
@@ -83,93 +88,98 @@ cd frontend
 # Instalar dependencias
 npm install
 
-# Verificar que las dependencias se instalaron correctamente
+# Verificar instalación
 npm list --depth=0
 ```
 
 ---
 
-## 🏃‍♂️ Ejecución del Proyecto
+## 🏃‍♂️ EJECUCIÓN DEL PROYECTO - INSTRUCCIONES DETALLADAS
+
+### ⚠️ IMPORTANTE: Liberar Puertos Antes de Ejecutar
+
+```bash
+# Matar procesos que puedan estar usando los puertos 8080 y 3000
+lsof -ti:8080 | xargs kill -9 2>/dev/null || true
+lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+```
 
 ### Opción 1: Desarrollo (Recomendado)
 
-#### Terminal 1: Backend
+#### Terminal 1: Backend (Spring Boot)
+
 ```bash
-# Desde la raíz del proyecto
+# Desde la raíz del proyecto (donde está el pom.xml)
 mvn spring-boot:run
 ```
 
-**Indicadores de éxito:**
+**✅ Indicadores de éxito del Backend:**
 - Puerto 8080 disponible
-- Mensaje: "Started Main in X.XXX seconds"
+- Mensaje: `Started Main in X.XXX seconds`
 - H2 Console disponible en: http://localhost:8080/h2-console
+- No debe haber errores de compilación
 
-#### Terminal 2: Frontend
+**❌ Si hay errores:**
+- Verificar que Java 17 esté instalado: `java -version`
+- Verificar que Maven esté instalado: `mvn --version`
+- Ejecutar: `mvn clean compile -DskipTests`
+
+#### Terminal 2: Frontend (React)
+
 ```bash
-# Desde la carpeta frontend
+# Abrir una NUEVA terminal
+# Navegar al directorio frontend
 cd frontend
+
+# Iniciar el servidor de desarrollo
 npm start
 ```
 
-**Indicadores de éxito:**
+**✅ Indicadores de éxito del Frontend:**
 - Puerto 3000 disponible
-- Mensaje: "Compiled successfully!"
+- Mensaje: `Compiled successfully!`
 - URL: http://localhost:3000
+- El navegador se abre automáticamente
 
-### Opción 2: Producción
+**❌ Si hay errores:**
+- Verificar que Node.js esté instalado: `node --version`
+- Verificar que npm esté instalado: `npm --version`
+- Ejecutar: `npm install` en el directorio frontend
 
-#### Backend
+### Opción 2: Ejecución con Puertos Diferentes
+
+Si los puertos 8080 o 3000 están ocupados:
+
+#### Backend en Puerto Diferente
 ```bash
-# Compilar JAR ejecutable
-mvn clean package -DskipTests
-
-# Ejecutar JAR
-java -jar target/transaction-management-system-1.0-SNAPSHOT.jar
+# Ejecutar en puerto 8081
+mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dserver.port=8081"
 ```
 
-#### Frontend
+#### Frontend en Puerto Diferente
 ```bash
-# Construir para producción
+# Cuando npm start pregunte por otro puerto, responder 'Y'
 cd frontend
-npm run build
-
-# Servir archivos estáticos (requiere servidor web)
-# Opción con serve (instalar: npm install -g serve)
-serve -s build -l 3000
+npm start
+# Responder 'Y' cuando pregunte por puerto alternativo
 ```
 
 ---
 
 ## 🧪 Testing
 
-### Tests Automatizados
+### Ejecutar Tests del Backend
 
-#### Ejecutar Todos los Tests
 ```bash
 # Desde la raíz del proyecto
-mvn clean verify
-```
+mvn test
 
-#### Tests Unitarios (Backend)
-```bash
+# Si hay errores de compilación en tests, ejecutar:
+mvn clean compile test-compile
 mvn test
 ```
 
-#### Tests de Integración
-```bash
-mvn test -Dtest=TransaccionControllerIntegrationTest
-```
-
-#### Tests Específicos
-```bash
-# Test de servicio específico
-mvn test -Dtest=TransaccionServiceTest
-
-# Test de controlador específico
-mvn test -Dtest=TransaccionControllerIntegrationTest
-```
-
-### Tests Manuales
+### Verificar que Todo Funciona
 
 #### 1. Verificar Backend
 ```bash
@@ -182,11 +192,17 @@ curl -X GET http://localhost:8080/api/transacciones
 #### 2. Verificar Frontend
 - Abrir http://localhost:3000
 - Debe mostrar la interfaz de usuario
-- No debe haber errores en la consola del navegador
+- No debe haber errores en la consola del navegador (F12)
+
+#### 3. Verificar Base de Datos H2
+- Abrir http://localhost:8080/h2-console
+- JDBC URL: `jdbc:h2:mem:testdb`
+- Username: `SA`
+- Password: (dejar vacío)
 
 ---
 
-## 📖 Guía de Uso
+## 📖 Guía de Uso del Sistema
 
 ### 1. Crear Transacciones
 
@@ -203,352 +219,233 @@ curl -X GET http://localhost:8080/api/transacciones
 curl -X POST http://localhost:8080/api/transacciones \
   -H "Content-Type: application/json" \
   -d '{
-    "nombre": "Compra de suministros",
+    "nombre": "Pago de servicios",
     "fecha": "2024-01-15",
-    "valor": 150.75
+    "valor": 150.00
   }'
 ```
 
 ### 2. Listar Transacciones
 
-#### Con Filtros
-- **Por Nombre**: Búsqueda parcial (case-insensitive)
-- **Por Fecha**: Fecha exacta
-- **Por Estado**: PENDIENTE, PAGADO, o TODOS
+#### Desde el Frontend
+- Las transacciones se muestran automáticamente
+- Usar filtros para buscar por nombre, fecha o estado
 
 #### Desde la API
 ```bash
-# Todas las transacciones
+# Obtener todas las transacciones
 curl -X GET http://localhost:8080/api/transacciones
 
-# Con filtros
-curl -X GET "http://localhost:8080/api/transacciones?nombre=suministros&estado=PENDIENTE"
+# Obtener transacciones con filtros
+curl -X GET "http://localhost:8080/api/transacciones?nombre=pago&estado=PENDIENTE"
 ```
 
-### 3. Editar Transacciones
-
-#### Restricciones
-- Solo transacciones con estado **PENDIENTE**
-- Transacciones **PAGADAS** no se pueden editar
+### 3. Realizar Pagos
 
 #### Desde el Frontend
-1. Hacer clic en el ícono de editar (lápiz)
-2. Modificar los campos
-3. Hacer clic en "Actualizar"
+1. En la lista de transacciones, hacer clic en "Pagar"
+2. Ingresar el monto exacto del pago
+3. Hacer clic en "Confirmar Pago"
+
+**⚠️ Importante:** Solo se aceptan pagos con montos exactos
 
 #### Desde la API
 ```bash
-curl -X PUT http://localhost:8080/api/transacciones/1 \
+# Pago exitoso (monto exacto)
+curl -X POST http://localhost:8080/api/transacciones/1/pago \
   -H "Content-Type: application/json" \
-  -d '{
-    "nombre": "Compra de suministros actualizada",
-    "fecha": "2024-01-16",
-    "valor": 175.25
-  }'
+  -d '{"monto": 150.00}'
+
+# Pago insuficiente (error 400)
+curl -X POST http://localhost:8080/api/transacciones/1/pago \
+  -H "Content-Type: application/json" \
+  -d '{"monto": 100.00}'
+
+# Pago en exceso (error 422)
+curl -X POST http://localhost:8080/api/transacciones/1/pago \
+  -H "Content-Type: application/json" \
+  -d '{"monto": 200.00}'
 ```
 
-### 4. Eliminar Transacciones
-
-#### Restricciones
-- Solo transacciones con estado **PENDIENTE**
-- Transacciones **PAGADAS** no se pueden eliminar
+### 4. Pago por Lotes
 
 #### Desde el Frontend
-1. Hacer clic en el ícono de eliminar (basura)
-2. Confirmar eliminación
+1. Hacer clic en "Pago por Lotes"
+2. El sistema procesará automáticamente las transacciones pendientes en orden cronológico
 
 #### Desde la API
 ```bash
-curl -X DELETE http://localhost:8080/api/transacciones/1
-```
-
-### 5. Realizar Pagos
-
-#### Lógica de Pago
-- **Orden cronológico**: Se pagan las transacciones más antiguas primero
-- **Pago completo**: Solo se paga si el monto cubre completamente la transacción
-- **Sin pagos parciales**: Si el monto no alcanza, la transacción queda pendiente
-
-#### Ejemplo de Pago
-```bash
-# Pago de $200 para transacciones pendientes
-curl -X POST "http://localhost:8080/api/transacciones/pagar?monto=200"
-```
-
-**Escenarios:**
-- **Transacción 1**: $100 (se paga)
-- **Transacción 2**: $150 (no se paga, monto restante: $100)
-- **Resultado**: "Se pagó 1 transacción exitosamente. Monto restante: $100.00"
-
----
-
-## 🔧 Configuración Avanzada
-
-### Variables de Entorno
-
-#### Backend (application.properties)
-```properties
-# Puerto del servidor
-server.port=8080
-
-# Configuración de base de datos
-spring.datasource.url=jdbc:h2:mem:testdb
-spring.datasource.driverClassName=org.h2.Driver
-spring.datasource.username=sa
-spring.datasource.password=
-
-# H2 Console (solo para desarrollo)
-spring.h2.console.enabled=true
-spring.h2.console.path=/h2-console
-
-# JPA/Hibernate
-spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
-spring.jpa.hibernate.ddl-auto=create-drop
-spring.jpa.show-sql=true
-```
-
-#### Frontend (.env)
-```env
-REACT_APP_API_URL=http://localhost:8080/api
-REACT_APP_ENVIRONMENT=development
-```
-
-### Configuración de CORS
-
-El backend incluye configuración CORS para permitir peticiones desde el frontend:
-
-```java
-@Configuration
-public class CorsConfig {
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/**")
-                    .allowedOrigins("http://localhost:3000")
-                    .allowedMethods("GET", "POST", "PUT", "DELETE")
-                    .allowedHeaders("*");
-            }
-        };
-    }
-}
+curl -X POST http://localhost:8080/api/transacciones/pago-lotes
 ```
 
 ---
 
-## 🐛 Troubleshooting
+## 🔧 Solución de Problemas Comunes
 
-### Problemas Comunes
-
-#### 1. Puerto 8080 Ocupado
+### Error: "Port 8080 was already in use"
 ```bash
-# Verificar qué proceso usa el puerto
-lsof -i :8080
+# Matar proceso en puerto 8080
+lsof -ti:8080 | xargs kill -9
 
-# Terminar proceso
-kill -9 <PID>
-
-# O cambiar puerto en application.properties
-server.port=8081
+# O usar puerto alternativo
+mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dserver.port=8081"
 ```
 
-#### 2. Puerto 3000 Ocupado
+### Error: "Port 3000 was already in use"
 ```bash
-# Verificar qué proceso usa el puerto
-lsof -i :3000
+# Matar proceso en puerto 3000
+lsof -ti:3000 | xargs kill -9
 
-# Terminar proceso
-kill -9 <PID>
-
-# O usar puerto diferente
-npm start -- --port 3001
+# O responder 'Y' cuando npm start pregunte por puerto alternativo
 ```
 
-#### 3. Errores de CORS
-- Verificar que el backend esté corriendo en puerto 8080
-- Verificar que el frontend esté corriendo en puerto 3000
-- Revisar configuración CORS en `CorsConfig.java`
-
-#### 4. Errores de Compilación
+### Error: "npm: command not found"
 ```bash
-# Limpiar y recompilar
-mvn clean compile
+# Instalar Node.js desde: https://nodejs.org/
+# Verificar instalación
+node --version
+npm --version
+```
 
-# Verificar versión de Java
-java -version
-
-# Verificar versión de Maven
+### Error: "mvn: command not found"
+```bash
+# Instalar Maven desde: https://maven.apache.org/download.cgi
+# Verificar instalación
 mvn --version
 ```
 
-#### 5. Errores de Dependencias Frontend
+### Error: "java: command not found"
 ```bash
-# Limpiar cache de npm
-npm cache clean --force
-
-# Eliminar node_modules y reinstalar
-rm -rf node_modules package-lock.json
-npm install
+# Instalar Java 17 desde: https://adoptium.net/
+# Verificar instalación
+java -version
 ```
 
-### Logs y Debugging
-
-#### Backend Logs
+### Error de Compilación en Tests
 ```bash
-# Ver logs detallados
-mvn spring-boot:run -Dspring-boot.run.arguments="--logging.level.com.transaction=DEBUG"
-
-# Logs específicos de Hibernate
-mvn spring-boot:run -Dspring-boot.run.arguments="--logging.level.org.hibernate.SQL=DEBUG"
+# Limpiar y recompilar
+mvn clean compile test-compile
+mvn test
 ```
 
-#### Frontend Debugging
-1. Abrir DevTools (F12)
-2. Ir a la pestaña Console
-3. Verificar errores de red en Network
-4. Revisar logs de la aplicación
+### Frontend No Se Conecta al Backend
+```bash
+# Verificar que el backend esté corriendo en puerto 8080
+curl http://localhost:8080/api/transacciones
 
----
-
-## 📊 Estructura del Proyecto
-
-```
-transaction-management-system/
-├── backend/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/transaction/
-│   │   │   │   ├── config/
-│   │   │   │   │   └── CorsConfig.java
-│   │   │   │   ├── controller/
-│   │   │   │   │   └── TransaccionController.java
-│   │   │   │   ├── dto/
-│   │   │   │   │   ├── TransaccionCreateDTO.java
-│   │   │   │   │   └── TransaccionDTO.java
-│   │   │   │   ├── entity/
-│   │   │   │   │   ├── EstadoTransaccion.java
-│   │   │   │   │   └── Transaccion.java
-│   │   │   │   ├── exception/
-│   │   │   │   │   └── GlobalExceptionHandler.java
-│   │   │   │   ├── repository/
-│   │   │   │   │   └── TransaccionRepository.java
-│   │   │   │   ├── service/
-│   │   │   │   │   ├── PaymentResult.java
-│   │   │   │   │   └── TransaccionService.java
-│   │   │   │   └── Main.java
-│   │   │   └── resources/
-│   │   │       └── application.properties
-│   │   └── test/
-│   │       ├── java/com/transaction/
-│   │       │   ├── controller/
-│   │       │   │   └── TransaccionControllerIntegrationTest.java
-│   │       │   └── service/
-│   │       │       └── TransaccionServiceTest.java
-│   │       └── resources/
-│   │           └── application-test.properties
-│   └── pom.xml
-├── frontend/
-│   ├── public/
-│   │   └── index.html
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── FiltrosForm.js
-│   │   │   ├── Notification.js
-│   │   │   ├── PagoForm.js
-│   │   │   ├── TransaccionForm.js
-│   │   │   └── TransaccionList.js
-│   │   ├── services/
-│   │   │   └── api.js
-│   │   ├── App.js
-│   │   └── index.js
-│   ├── package.json
-│   └── README.md
-└── README.md
+# Verificar configuración CORS en el backend
+# El proyecto ya incluye configuración CORS correcta
 ```
 
 ---
 
-## 🧪 Casos de Prueba
+## 📚 Endpoints de la API
 
-### Escenarios de Pago
+### Transacciones
+- `GET /api/transacciones` - Listar transacciones
+- `POST /api/transacciones` - Crear transacción
+- `GET /api/transacciones/{id}` - Obtener transacción por ID
+- `PUT /api/transacciones/{id}` - Actualizar transacción
+- `DELETE /api/transacciones/{id}` - Eliminar transacción
 
-#### Caso 1: Pago Completo
-```bash
-# Crear transacciones
-curl -X POST http://localhost:8080/api/transacciones \
-  -H "Content-Type: application/json" \
-  -d '{"nombre": "Transacción 1", "fecha": "2024-01-01", "valor": 100}'
+### Pagos
+- `POST /api/transacciones/{id}/pago` - Realizar pago individual
+- `POST /api/transacciones/pago-lotes` - Realizar pago por lotes
 
-curl -X POST http://localhost:8080/api/transacciones \
-  -H "Content-Type: application/json" \
-  -d '{"nombre": "Transacción 2", "fecha": "2024-01-02", "valor": 200}'
-
-# Pagar $150
-curl -X POST "http://localhost:8080/api/transacciones/pagar?monto=150"
-# Resultado: "Se pagó 1 transacción exitosamente. Monto restante: $50.00"
-```
-
-#### Caso 2: Pago Insuficiente
-```bash
-# Pagar $50 para transacción de $100
-curl -X POST "http://localhost:8080/api/transacciones/pagar?monto=50"
-# Resultado: "No se pudo pagar ninguna transacción. El monto $50.00 no es suficiente..."
-```
-
-### Validaciones
-
-#### Campos Obligatorios
-```bash
-# Error: nombre vacío
-curl -X POST http://localhost:8080/api/transacciones \
-  -H "Content-Type: application/json" \
-  -d '{"nombre": "", "fecha": "2024-01-01", "valor": 100}'
-
-# Error: valor negativo
-curl -X POST http://localhost:8080/api/transacciones \
-  -H "Content-Type: application/json" \
-  -d '{"nombre": "Test", "fecha": "2024-01-01", "valor": -100}'
-```
+### Filtros
+- `GET /api/transacciones?nombre=texto` - Filtrar por nombre
+- `GET /api/transacciones?fecha=2024-01-15` - Filtrar por fecha
+- `GET /api/transacciones?estado=PENDIENTE` - Filtrar por estado
 
 ---
 
-## 📝 Notas de Desarrollo
+## 🎯 Casos de Prueba Recomendados
 
-### Tecnologías Utilizadas
+### 1. Flujo Básico
+1. Crear 3 transacciones con diferentes montos
+2. Verificar que aparezcan en la lista
+3. Realizar pagos con montos exactos
+4. Verificar cambio de estado a "PAGADO"
 
-- **Backend**: Spring Boot 3.2.6, Spring Data JPA, H2 Database
-- **Frontend**: React 18, Material-UI, Axios
-- **Testing**: JUnit 5, Mockito, Spring Boot Test
-- **Build Tools**: Maven, npm
+### 2. Validaciones de Pago
+1. Crear transacción de $100
+2. Intentar pagar $50 (debe dar error 400)
+3. Intentar pagar $150 (debe dar error 422)
+4. Pagar $100 (debe ser exitoso)
 
-### Patrones de Diseño
+### 3. Pago por Lotes
+1. Crear 5 transacciones con fechas diferentes
+2. Realizar pago por lotes
+3. Verificar que se procesen en orden cronológico
 
-- **DTO Pattern**: Separación entre entidades y objetos de transferencia
-- **Repository Pattern**: Abstracción de acceso a datos
-- **Service Layer**: Lógica de negocio centralizada
-- **Exception Handling**: Manejo global de excepciones
+### 4. Filtros
+1. Crear transacciones con diferentes nombres
+2. Probar filtros por nombre, fecha y estado
+3. Verificar que los filtros funcionen correctamente
 
-### Consideraciones de Seguridad
+---
 
-- Validación de entrada en backend y frontend
-- Sanitización de datos
-- Manejo seguro de errores (no exponer detalles internos)
-- Configuración CORS apropiada
+## 📋 Colección de Postman
+
+El proyecto incluye una colección completa de Postman para probar todos los endpoints de la API.
+
+### 📁 Ubicación
+```
+documentos/TRANSACTION_MANAGER_SYSTEM.postman_collection.json
+```
+
+### 🚀 Cómo usar la colección
+
+1. **Importar en Postman:**
+   - Abrir Postman
+   - Hacer clic en "Import"
+   - Seleccionar el archivo `TRANSACTION_MANAGER_SYSTEM.postman_collection.json`
+
+2. **Configurar variables:**
+   - La colección usa la variable `{{base_url}}` configurada por defecto en `http://localhost:8080`
+   - Si usas un puerto diferente, actualiza la variable en la colección
+
+3. **Endpoints incluidos:**
+   - **Transacciones:**
+     - Obtener todas las transacciones
+     - Obtener transacciones con filtros
+     - Obtener transacción por ID
+     - Crear nueva transacción
+     - Actualizar transacción
+     - Eliminar transacción
+   - **Pagos:**
+     - Realizar pago
+     - Obtener transacciones pendientes
+
+### 🧪 Casos de prueba incluidos
+- Ejemplos de JSON para crear y actualizar transacciones
+- Filtros de búsqueda con parámetros de ejemplo
+- Diferentes escenarios de pago (exitoso, insuficiente, exceso)
 
 ---
 
 ## 📞 Soporte
 
-Para reportar bugs o solicitar nuevas funcionalidades:
+Si encuentras problemas:
 
-1. Verificar que el problema no esté en la sección de troubleshooting
-2. Revisar los logs del backend y frontend
-3. Proporcionar pasos específicos para reproducir el problema
-4. Incluir información del entorno (SO, versiones de software)
+1. **Verificar requisitos**: Asegúrate de tener Java 17, Node.js 18+ y Maven 3.8+
+2. **Revisar logs**: Los errores aparecen en la terminal donde ejecutas los comandos
+3. **Liberar puertos**: Usa los comandos para matar procesos en puertos 8080 y 3000
+4. **Recompilar**: Ejecuta `mvn clean compile` y `npm install`
 
 ---
 
-## 📄 Licencia
+## 🏆 Estado del Proyecto
 
-Este proyecto es parte de una evaluación técnica y está destinado únicamente para fines educativos y de demostración. 
+✅ **Completado:**
+- Backend Spring Boot funcional
+- Frontend React funcional
+- API REST completa
+- Sistema de pagos con validaciones
+- Tests unitarios y de integración
+- Documentación completa
+
+🚀 **Listo para usar:**
+- El proyecto está completamente funcional
+- Todos los tests pasan
+- Documentación paso a paso incluida 
